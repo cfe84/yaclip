@@ -1,0 +1,30 @@
+{
+  "name": "yaclip",
+  "version": "0.0.1",
+  "description": "Yet another command line parser (that supports subcommands)",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cfe84/yaclip.git"
+  },
+  "keywords": [
+    "command",
+    "command",
+    "line",
+    "parser",
+    "cli"
+  ],
+  "author": "Charles Feval",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cfe84/yaclip/issues"
+  },
+  "homepage": "https://github.com/cfe84/yaclip#readme",
+  "devDependencies": {
+    "mocha": "^5.2.0",
+    "should": "^13.2.3"
+  }
+}
