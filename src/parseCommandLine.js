@@ -1,8 +1,9 @@
 const commandLineParser = require("./commandLineParser");
 
-const parseCommandLine = () => {
+const parseCommandLine = (commands) => {
     const args = process.argv.slice(2);
-    return commandLineParser(args);
+    const parse = commandLineParser(commands);
+    return parse(args);
 }
 
 module.exports = parseCommandLine;
