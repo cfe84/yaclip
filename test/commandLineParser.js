@@ -60,8 +60,8 @@ describe("Command line parser", () => {
         })
     });
     it("should throw when unknown command", () => {
-        should(() => commandLineParser(["-z"])).throw("Unknown command: z");
-        should(() => commandLineParser(["-g", "/something", "-z"])).throw("Unknown command: z");
+        should(() => commandLineParser(["-z"])).throw("Unknown command: -z");
+        should(() => commandLineParser(["-g", "/something", "-z"])).throw("Unknown command: -z");
     });
     it("should throw when incomplete command", () => {
         should(() => commandLineParser(["-g"])).throw("Expecting value for command get");
@@ -78,5 +78,26 @@ describe("Command line parser", () => {
         const input = ["--get", "/"];
         commandLineParser(input);
         should(input).have.length(2);
+    });
+    it("should not require -- if option is passed to do so", () => {
+        const commandLineParser = Parser(mainCommands, {
+            dashesAreOptional: true
+        });
+        const res = commandLineParser([
+            "g", "/something", "--header", "yo", "--response", "bla", "--header", "hey", 
+            "get", "YOUHOU",
+            "--get", "Cool!"
+        ]);
+        should(res).deepEqual({
+            get: [{
+                value: "/something",
+                header: [ { value: "yo" }, { value: "hey" }],
+                response: { value: "bla" }
+            }, {
+                value: "YOUHOU"
+            }, {
+                value: "Cool!"
+            }]
+        })
     })
 });

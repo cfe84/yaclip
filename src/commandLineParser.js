@@ -1,4 +1,6 @@
-const parser = (commands) => {
+const parser = (commands, {
+        dashesAreOptional = false
+    } = {}) => {
     const findCommand = (commandList, commandText) => {
         return commandList.find((command) => command.name === commandText);
     }
@@ -6,6 +8,10 @@ const parser = (commands) => {
     const findAlias = (commandList, commandText) => {
         return commandList.find((command) => command.alias === commandText);
     }
+    
+    const isAlias = (commandTxt) => commandTxt.length === 2 && commandTxt[0] === "-";
+
+    const isFullCommand = (commandTxt) => commandTxt.length > 2 && commandTxt.substring(0, 2) === "--";
 
     const processCommand = (res, commandLine, command) => {
         let value;
@@ -23,7 +29,7 @@ const parser = (commands) => {
         const nextCommandIsSubcommand = () => {
             const nextCommand = commandLine[0];
             const nextCommandIsAlias = !!isAlias(nextCommand) && !!findAlias(command.subcommands, nextCommand.substring(1));
-            const nextCommandIsCommand = !!isCommand(nextCommand) && !!findCommand(command.subcommands, nextCommand.substring(2));
+            const nextCommandIsCommand = !!isFullCommand(nextCommand) && !!findCommand(command.subcommands, nextCommand.substring(2));
             return nextCommandIsAlias || nextCommandIsCommand;
         }
         while(commandLine.length > 0 && 
@@ -46,29 +52,44 @@ const parser = (commands) => {
                 res[command.name] = parsedCommand;
             }
         }
+    };
+
+
+    const parseFullCommand = (commandList, commandTxt) => {
+        commandTxt = commandTxt.substring(2);
+        return findCommand(commandList, commandTxt);
     }
 
-    const isAlias = (commandTxt) => commandTxt.length === 2 && commandTxt[0] === "-";
-    const isCommand = (commandTxt) => commandTxt.length > 2 && commandTxt.substring(0, 2) === "--";
+    const parseAlias = (commandList, commandTxt) => {
+        commandTxt = commandTxt.substring(1);
+        return findAlias(commandList, commandTxt);
+    }
+
+    const parseUnknown = (commandList, commandTxt) => {
+        return findCommand(commandList, commandTxt) || 
+            findAlias(commandList, commandTxt);
+    }
 
     const parseCommand = (commandList, res, commandLine) => {
         if (commandLine.length === 0) {
             return;
         }
         let commandTxt = commandLine.shift();
+        let command = null;
         const commandIsAlias = isAlias(commandTxt);
-        const commandIsCommand = isCommand(commandTxt);
+        const commandIsFullCommand = isFullCommand(commandTxt);
 
-        if (!commandIsCommand && !commandIsAlias) {
+        if (!commandIsFullCommand && !commandIsAlias && !dashesAreOptional) {
             throw Error(`Incorrect parameter: ${commandTxt}`);
         }
-        if (commandIsCommand) {
-            commandTxt = commandTxt.substring(2);
+        if (commandIsFullCommand) {
+            command = parseFullCommand(commandList, commandTxt);
         }
-        if (commandIsAlias) {
-            commandTxt = commandTxt.substring(1);
+        else if (commandIsAlias) {
+            command = parseAlias(commandList, commandTxt);
+        } else if (dashesAreOptional) {
+            command = parseUnknown(commandList, commandTxt);
         }
-        const command = commandIsAlias ? findAlias(commandList, commandTxt) : findCommand(commandList, commandTxt);
         if (!command) {
             throw Error(`Unknown command: ${commandTxt}`);
         }
