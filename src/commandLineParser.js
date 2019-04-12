@@ -28,8 +28,10 @@ const parser = (commands, {
         };
         const nextCommandIsSubcommand = () => {
             const nextCommand = commandLine[0];
-            const nextCommandIsAlias = !!isAlias(nextCommand) && !!findAlias(command.subcommands, nextCommand.substring(1));
-            const nextCommandIsCommand = !!isFullCommand(nextCommand) && !!findCommand(command.subcommands, nextCommand.substring(2));
+            const nextCommandIsAlias = (!!isAlias(nextCommand) && !!findAlias(command.subcommands, nextCommand.substring(1)) 
+                || (dashesAreOptional && !!findAlias(command.subcommands, nextCommand)));
+            const nextCommandIsCommand = (!!isFullCommand(nextCommand) && !!findCommand(command.subcommands, nextCommand.substring(2)) 
+                || (dashesAreOptional && !!findCommand(command.subcommands, nextCommand)));
             return nextCommandIsAlias || nextCommandIsCommand;
         }
         while(commandLine.length > 0 && 

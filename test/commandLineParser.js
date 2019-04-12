@@ -84,7 +84,7 @@ describe("Command line parser", () => {
             dashesAreOptional: true
         });
         const res = commandLineParser([
-            "g", "/something", "--header", "yo", "--response", "bla", "--header", "hey", 
+            "g", "/something", "--header", "yo", "response", "bla", "--header", "hey", 
             "get", "YOUHOU",
             "--get", "Cool!"
         ]);
@@ -100,4 +100,5 @@ describe("Command line parser", () => {
             }]
         })
     })
+    
 });
