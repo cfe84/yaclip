@@ -1,6 +1,6 @@
 {
   "name": "yaclip",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Yet another command line parser (that supports subcommands)",
   "main": "index.js",
   "types": "index.d.ts",
